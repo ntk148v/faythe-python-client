@@ -24,10 +24,12 @@ import time
 
 import requests
 
+from faytheclient import http
+
 LOG = logging.getLogger(__name__)
 
 
-class Client(object):
+class Client(http.HTTPClient):
     """Client for the Faythe API.
 
     :param endpoint: A user-supplied endpoint URL for the Faythe service.
@@ -37,13 +39,10 @@ class Client(object):
 
     jwt = None
     jwt_expired_at = None
-    headers = None
 
-    def __init__(self, endpoint, username, password):
+    def __init__(self, endpoint, username, password, **kwargs):
         """Initialize a new client for the Faythe API."""
-        self.endpoint = endpoint.strip('/')
-        if not endpoint.startswith('http') and not endpoint.startswith('https'):
-            self.endpoint = 'http://{}'.format(endpoint)
+        super(Client, self).__init__(endpoint, **kwargs)
         self.username = username
         self.password = password
 
@@ -52,14 +51,23 @@ class Client(object):
 
     def get_jwt_token(self):
         try:
-            r = requests.post(
-                self.endpoint + "/api/auth",
-                data=json.dumps({"Username": self.username,
-                                 "Password": self.password}))
-            r.raise_for_status()
-            jwt = r.json()
+            resp = self.post('/public/login',
+                             data=json.dumps({"Username": self.username,
+                                              "Password": self.password}))
+
+            jwt = resp.json()
             self.jwt = jwt.get('jwt')
             self.headers = {"Authorization": "Bearer {}".format(self.jwt)}
-            LOG.debug("Logged into Portainer %s" % self.endpoint)
+            LOG.debug("Logged into Faythe %s" % self.endpoint)
         except Exception as e:
             LOG.exception("Unable to authenticate a user: {}".format(e))
+
+    class decorator(object):
+        @staticmethod
+        def refresh_jwt_token(decorated_func):
+            def wrapper(api, *args, **kwargs):
+                if time.time() > api.jwt_expired_at:
+                    api.get_jwt_token()
+                return decorated_func(api, *args, **kwargs)
+
+            return wrapper
