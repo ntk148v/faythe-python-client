@@ -1,0 +1,17 @@
+CHANGES
+=======
+
+* Change data to json in request
+* Update README
+* Generate url
+* Add docstring
+* Add scalers, healers, silences methods
+* Update client
+* Update faytheclient
+* Update Pipfiles
+* Init faytheclient
+* Init setup
+* Add Apache 2 License
+* Add pipenv files
+* Add gitignore
+* Initial commit
