@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+* Add version and rename package
+* Fix typo
+* Update README
+* Add example
+* Add Changelog
+* Add AUTHORS
 * Change data to json in request
 * Update README
 * Generate url
