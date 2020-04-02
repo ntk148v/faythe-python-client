@@ -37,7 +37,6 @@ class Client(http.HTTPClient):
     :param password: A Faythe password to generate jwt.
     """
 
-    jwt = None
     jwt_expired_at = None
 
     def __init__(self, endpoint, username, password, **kwargs):
@@ -51,16 +50,13 @@ class Client(http.HTTPClient):
 
     def get_jwt_token(self):
         try:
-            resp = self.post('/public/login',
-                             data=json.dumps({"Username": self.username,
-                                              "Password": self.password}))
-
-            jwt = resp.json()
-            self.jwt = jwt.get('jwt')
-            self.headers = {"Authorization": "Bearer {}".format(self.jwt)}
+            # Get and store token in requests Session's cookie
+            self.get('/public/login',
+                     auth=(self.username, self.password))
             LOG.debug("Logged into Faythe %s" % self.endpoint)
         except Exception as e:
             LOG.exception("Unable to authenticate a user: {}".format(e))
+            raise e
 
     class decorator(object):
         @staticmethod
@@ -71,3 +67,19 @@ class Client(http.HTTPClient):
                 return decorated_func(api, *args, **kwargs)
 
             return wrapper
+
+    @decorator.refresh_jwt_token
+    def list_clouds(self):
+        return self.get('/clouds')
+
+    @decorator.refresh_jwt_token
+    def register_cloud(self, provider, body):
+        return self.post('/clouds/{}'. format(provider), data=body)
+
+    @decorator.refresh_jwt_token
+    def unregister_cloud(self, id):
+        return self.delete('/clouds/{}'. format(id))
+
+    @decorator.refresh_jwt_token
+    def update_cloud(self, id, body=None):
+        return self.put('/clouds/{}' . format(id), data=body)

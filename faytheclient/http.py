@@ -33,8 +33,6 @@ LOG = logging.getLogger(__name__)
 
 
 class HTTPClient(object):
-    headers = {}
-
     def __init__(self, endpoint, **kwargs):
         self.endpoint = endpoint.strip('/')
         if not endpoint.startswith('http') and not endpoint.startswith('https'):
@@ -59,7 +57,6 @@ class HTTPClient(object):
         headers = copy.deepcopy(kwargs.pop('headers', {}))
         if headers.get('Content-Type', 'application/json') is None:
             headers['Content-Type'] = 'application/json'
-        headers.update(self.headers)
         if self.endpoint.endswith("/") or url.startswith("/"):
             conn_url = "%s%s" % (self.endpoint, url)
         else:
