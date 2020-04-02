@@ -83,3 +83,47 @@ class Client(http.HTTPClient):
     @decorator.refresh_jwt_token
     def update_cloud(self, id, body=None):
         return self.put('/clouds/{}' . format(id), data=body)
+
+    @decorator.refresh_jwt_token
+    def create_scaler(self, cloud_id, body):
+        return self.post('/scalers/{}' . format(cloud_id), data=body)
+
+    @decorator.refresh_jwt_token
+    def list_scalers(self, cloud_id):
+        return self.get('/scalers/{}'. format(cloud_id))
+
+    @decorator.refresh_jwt_token
+    def delete_scaler(self, cloud_id):
+        return self.delete('/scalers/{}' . format(cloud_id))
+
+    @decorator.refresh_jwt_token
+    def update_scaler(self, cloud_id, body=None):
+        return self.put('/scalers/{}' . format(cloud_id), data=body)
+
+    @decorator.refresh_jwt_token
+    def list_nresolvers(self):
+        return self.get('/nsresolvers')
+
+    @decorator.refresh_jwt_token
+    def list_healers(self, cloud_id):
+        return self.get('/healers')
+
+    @decorator.refresh_jwt_token
+    def create_healer(self, cloud_id, body):
+        return self.post('/healers/{}' . format(cloud_id), data=body)
+
+    @decorator.refresh_jwt_token
+    def delete_healers(self, cloud_id):
+        return self.delete('/healers/{}' . format(cloud_id))
+
+    @decorator.refresh_jwt_token
+    def create_silence(self, cloud_id, body):
+        return self.post('/silences/{}' . format(cloud_id),  data=body)
+
+    @decorator.refresh_jwt_token
+    def list_silences(self, cloud_id):
+        return self.get('/silences/{}' . format(cloud_id))
+
+    @decorator.refresh_jwt_token
+    def delete_silence(self, cloud_id):
+        return self.delete('/silences/{}' . format(cloud_id))
