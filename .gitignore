@@ -145,3 +145,6 @@ static
 # editor
 .vscode/
 .idea/
+
+# Changelog
+ChangeLog
