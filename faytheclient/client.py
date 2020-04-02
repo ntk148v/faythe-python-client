@@ -25,6 +25,7 @@ import time
 import requests
 
 from faytheclient import http
+from faytheclient import utils
 
 LOG = logging.getLogger(__name__)
 
@@ -69,9 +70,20 @@ class Client(http.HTTPClient):
             return wrapper
 
     @decorator.refresh_jwt_token
-    def list_clouds(self):
-        """List all clouds that are registerd to Faythe"""
-        return self.get('/clouds')
+    def list_clouds(self, **kwargs):
+        """List all clouds that are registerd to Faythe
+
+        :param provider: (optional) Filter a cloud result by provider.
+                         The only supported provider is OpenStack so
+                         this one is useless right now.
+        :param id: (optional) Filter cloud result by id.
+        :param tags: (optional) A list of tags to filter the cloud list by.
+                     Clouds that match all tags in this list will be returned.
+        :param tags_any: (optional) A list of tags to filter the cloud list by.
+                         Clouds that match any tags in this list will be returned.
+        """
+        url = utils.generate_url('/clouds', **kwargs)
+        return self.get(url)
 
     @decorator.refresh_jwt_token
     def register_cloud(self, provider, body):
@@ -81,7 +93,8 @@ class Client(http.HTTPClient):
                          provider supported by now.
         :param body: A dictionary object.
         """
-        return self.post('/clouds/{}'. format(provider), data=body)
+        url = utils.generate_url('/clouds', provider)
+        return self.post(url, data=body)
 
     @decorator.refresh_jwt_token
     def unregister_cloud(self, id):
@@ -89,7 +102,8 @@ class Client(http.HTTPClient):
 
         :param id: The id of cloud.
         """
-        return self.delete('/clouds/{}'. format(id))
+        url = utils.generate_url('/clouds', id)
+        return self.delete(url. format(id))
 
     @decorator.refresh_jwt_token
     def update_cloud(self, id, body=None):
@@ -99,7 +113,8 @@ class Client(http.HTTPClient):
         :param body: (optional) A dictionary object. If it
                      is None, the cloud won't be updated.
         """
-        return self.put('/clouds/{}' . format(id), data=body)
+        url = utils.generate_url('/clouds', id)
+        return self.put(url, data=body)
 
     @decorator.refresh_jwt_token
     def create_scaler(self, cloud_id, body):
@@ -108,20 +123,27 @@ class Client(http.HTTPClient):
         :param cloud_id: The id of cloud.
         :param body: A dictionary object.
         """
-        return self.post('/scalers/{}' . format(cloud_id), data=body)
+        url = utils.generate_url('/scalers', cloud_id)
+        return self.post(url, data=body)
 
     @decorator.refresh_jwt_token
-    def list_scalers(self, cloud_id):
+    def list_scalers(self, cloud_id, **kwargs):
         """List all scalers belong to a cloud.
 
         :param cloud_id: The id of cloud.
+        :param tags: (optional) A list of tags to filter the scaler list by.
+                     Scalers that match all tags in this list will be returned.
+        :param tags_any: (optional) A list of tags to filter the scaler list by.
+                         Scalers that match any tags in this list will be returned.
         """
-        return self.get('/scalers/{}'. format(cloud_id))
+        url = utils.generate_url('/scalers', cloud_id, **kwargs)
+        return self.get(url)
 
     @decorator.refresh_jwt_token
     def delete_scaler(self, cloud_id):
         """Delete a scaler."""
-        return self.delete('/scalers/{}' . format(cloud_id))
+        url = utils.generate_url('/scalers', cloud_id)
+        return self.delete(url)
 
     @decorator.refresh_jwt_token
     def update_scaler(self, cloud_id, body=None):
@@ -131,7 +153,8 @@ class Client(http.HTTPClient):
         :param body: (optional) A dictionary object. If it
                      is None, the scaler won't be updated.
         """
-        return self.put('/scalers/{}' . format(cloud_id), data=body)
+        url = utils.generate_url('/scalers', cloud_id)
+        return self.put(url, data=body)
 
     @decorator.refresh_jwt_token
     def list_nresolvers(self):
@@ -153,7 +176,8 @@ class Client(http.HTTPClient):
         :param cloud_id: The id of cloud.
         :param body: A dictionary object.
         """
-        return self.post('/healers/{}' . format(cloud_id), data=body)
+        url = utils.generate_url('/healers', cloud_id)
+        return self.post(url, data=body)
 
     @decorator.refresh_jwt_token
     def delete_healers(self, cloud_id):
@@ -161,7 +185,8 @@ class Client(http.HTTPClient):
 
         :param cloud_id: The id of cloud.
         """
-        return self.delete('/healers/{}' . format(cloud_id))
+        url = utils.generate_url('/healers', cloud_id)
+        return self.delete(url . format(cloud_id))
 
     @decorator.refresh_jwt_token
     def create_silence(self, cloud_id, body):
@@ -170,7 +195,8 @@ class Client(http.HTTPClient):
         :param cloud_id: The id of cloud.
         :param body: A dictionary object.
         """
-        return self.post('/silences/{}' . format(cloud_id),  data=body)
+        url = utils.generate_url('/silences', cloud_id)
+        return self.post(url,  data=body)
 
     @decorator.refresh_jwt_token
     def list_silences(self, cloud_id):
@@ -178,7 +204,8 @@ class Client(http.HTTPClient):
 
         :param cloud_id: The id of cloud.
         """
-        return self.get('/silences/{}' . format(cloud_id))
+        url = utils.generate_url('/silences', cloud_id)
+        return self.get(url)
 
     @decorator.refresh_jwt_token
     def delete_silence(self, cloud_id):
@@ -186,4 +213,5 @@ class Client(http.HTTPClient):
 
         :param cloud_id: The id of cloud.
         """
-        return self.delete('/silences/{}' . format(cloud_id))
+        url = utils.generate_url('/silences', cloud_id)
+        return self.delete(url)
