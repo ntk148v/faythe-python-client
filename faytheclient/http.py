@@ -28,7 +28,7 @@ import simplejson
 
 from faytheclient import exceptions
 
-USER_AGENT = 'faythe-python-client'
+USER_AGENT = 'faytheclient'
 LOG = logging.getLogger(__name__)
 
 

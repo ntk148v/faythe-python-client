@@ -21,4 +21,4 @@
 import pbr.version
 
 
-__version__ = pbr.version.VersionInfo('faythe-python-client').version_string()
+__version__ = pbr.version.VersionInfo('faytheclient').version_string()
