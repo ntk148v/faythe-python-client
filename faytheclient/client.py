@@ -49,8 +49,8 @@ class Client(http.HTTPClient):
         self.jwt_expired_at = time.time() + 60 * 40  # 40 minutes
 
     def get_jwt_token(self):
+        """Get and store jwt in its Session's cookies"""
         try:
-            # Get and store token in requests Session's cookie
             self.get('/public/login',
                      auth=(self.username, self.password))
             LOG.debug("Logged into Faythe %s" % self.endpoint)
@@ -70,60 +70,120 @@ class Client(http.HTTPClient):
 
     @decorator.refresh_jwt_token
     def list_clouds(self):
+        """List all clouds that are registerd to Faythe"""
         return self.get('/clouds')
 
     @decorator.refresh_jwt_token
     def register_cloud(self, provider, body):
+        """Register a new cloud to Faythe
+
+        :param provider: The cloud provider type. 'OpenStack' is the only
+                         provider supported by now.
+        :param body: A dictionary object.
+        """
         return self.post('/clouds/{}'. format(provider), data=body)
 
     @decorator.refresh_jwt_token
     def unregister_cloud(self, id):
+        """Remove a cloud from Faythe
+
+        :param id: The id of cloud.
+        """
         return self.delete('/clouds/{}'. format(id))
 
     @decorator.refresh_jwt_token
     def update_cloud(self, id, body=None):
+        """Update a cloud information
+
+        :param id: The id of cloud.
+        :param body: (optional) A dictionary object. If it
+                     is None, the cloud won't be updated.
+        """
         return self.put('/clouds/{}' . format(id), data=body)
 
     @decorator.refresh_jwt_token
     def create_scaler(self, cloud_id, body):
+        """Create a scaler belong to a cloud.
+
+        :param cloud_id: The id of cloud.
+        :param body: A dictionary object.
+        """
         return self.post('/scalers/{}' . format(cloud_id), data=body)
 
     @decorator.refresh_jwt_token
     def list_scalers(self, cloud_id):
+        """List all scalers belong to a cloud.
+
+        :param cloud_id: The id of cloud.
+        """
         return self.get('/scalers/{}'. format(cloud_id))
 
     @decorator.refresh_jwt_token
     def delete_scaler(self, cloud_id):
+        """Delete a scaler."""
         return self.delete('/scalers/{}' . format(cloud_id))
 
     @decorator.refresh_jwt_token
     def update_scaler(self, cloud_id, body=None):
+        """Update a scaler information.
+
+        :param cloud_id: The id of cloud.
+        :param body: (optional) A dictionary object. If it
+                     is None, the scaler won't be updated.
+        """
         return self.put('/scalers/{}' . format(cloud_id), data=body)
 
     @decorator.refresh_jwt_token
     def list_nresolvers(self):
+        """List all nresovlers (name resolvers)."""
         return self.get('/nsresolvers')
 
     @decorator.refresh_jwt_token
     def list_healers(self, cloud_id):
+        """List all healers belong to a cloud.
+
+        :param cloud_id: The id of cloud.
+        """
         return self.get('/healers')
 
     @decorator.refresh_jwt_token
     def create_healer(self, cloud_id, body):
+        """Create a new healer belongs to a cloud.
+
+        :param cloud_id: The id of cloud.
+        :param body: A dictionary object.
+        """
         return self.post('/healers/{}' . format(cloud_id), data=body)
 
     @decorator.refresh_jwt_token
     def delete_healers(self, cloud_id):
+        """Delete a healer.
+
+        :param cloud_id: The id of cloud.
+        """
         return self.delete('/healers/{}' . format(cloud_id))
 
     @decorator.refresh_jwt_token
     def create_silence(self, cloud_id, body):
+        """Create a silencer to ignore healing action.
+
+        :param cloud_id: The id of cloud.
+        :param body: A dictionary object.
+        """
         return self.post('/silences/{}' . format(cloud_id),  data=body)
 
     @decorator.refresh_jwt_token
     def list_silences(self, cloud_id):
+        """List all silencers belong to a cloud.
+
+        :param cloud_id: The id of cloud.
+        """
         return self.get('/silences/{}' . format(cloud_id))
 
     @decorator.refresh_jwt_token
     def delete_silence(self, cloud_id):
+        """Delete a healer belong to a cloud.
+
+        :param cloud_id: The id of cloud.
+        """
         return self.delete('/silences/{}' . format(cloud_id))
