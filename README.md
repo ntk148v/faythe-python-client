@@ -17,13 +17,14 @@ python setup.py install
 
 This package can be found on [PyPI](https://pypi.python.org/pypi/faytheclient).
 
-``bash
+```bash
 pip install faytheclient
 ```
 
 ## Examples
 
 The example can be found [here](./examples/).
+
 - Create a copy of the environment variables example. Then adjust it:
 
 ```bash
