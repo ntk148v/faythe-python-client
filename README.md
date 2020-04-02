@@ -1,6 +1,6 @@
 # Faythe Python Client
 
-[![license](https://img.shields.io/badge/license-Apache%20v2.0-blue.svg?style=for-the-badge)](LICENSE)
+[![license](https://img.shields.io/badge/license-Apache%20v2.0-blue.svg?style=for-the-badge)](LICENSE) [![PyPI version](https://badge.fury.io/py/faytheclient.svg?style=for-the-badge)](https://badge.fury.io/py/faytheclient)
 
 This is a client library for [Faythe](https://github.com/vCloud-DFTBA/faythe) built on the its API. It provides a Python API (the faytheclient module).
 
