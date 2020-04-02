@@ -50,7 +50,7 @@ class HTTPClient(object):
             finally:
                 self.session = None
 
-    def _request(self, method, url, data=None, **kwargs):
+    def _request(self, method, url, body=None, **kwargs):
         """Send an http request with the specified characteristics.
         """
         # Copy the kwargs so we can reuse the original in case of redirects
@@ -63,7 +63,7 @@ class HTTPClient(object):
             conn_url = "%s/%s" % (self.endpoint, url)
         try:
             resp = self.session.request(method, conn_url,
-                                        data=data, headers=headers,
+                                        json=body, headers=headers,
                                         timeout=self.timeout, **kwargs)
         except requests.exceptions.Timeout as e:
             message = ("Error communicating with %(url)s: %(e)s" %
