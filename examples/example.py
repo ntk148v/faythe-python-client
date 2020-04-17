@@ -20,6 +20,7 @@
 
 import os
 import json
+import hashlib
 
 from faytheclient import client
 
@@ -32,11 +33,15 @@ if __name__ == '__main__':
         print('Missing environment variables! %s' % str(e))
         raise e
     fcli = client.Client(endpoint, username, password)
+    # Openstack auth_url
+    auth_url = "http://192.169.1.2:5000/v3"
+    encoded_auth_url = auth_url.encode()
+    cloud_id = hashlib.md5(encoded_auth_url).hexdigest()
     # Create a cloud
     create_cloud_body = {
         "auth": {
             "username": "admin",
-            "auth_url": "http://192.169.1.2:5000/v3",
+            "auth_url": auth_url,
             "password": "fakepassword",
             "project_name": "admin",
             "domain_name": "Default",
@@ -61,3 +66,29 @@ if __name__ == '__main__':
     print(fcli.register_cloud('openstack', create_cloud_body))
     # List all clouds
     print(fcli.list_clouds())
+    # List a single cloud
+    print(fcli.list_clouds(id=cloud_id))
+    # Create scalers
+    create_scaler_body = {
+        "query": "asg:memory:avg{stack_asg_name=\"cloud-portal-autoscaling\"} > 75",
+        "duration": "5m",
+        "interval": "60s",
+        "actions": {
+            "scale_out": {
+                "url": "http://192.169.1.2:8000/v1/signal/fakeactionurl",
+                "attempts": 4,
+                "delay": "50ms",
+                "type": "http",
+                "delay_type": "backoff",
+                "method": "POST"
+            }
+        },
+        "cooldown": "10m",
+        "metadata": {
+            "group": "cloud_portal"
+        },
+        "active": True
+    }
+    print(fcli.create_scaler(cloud_id, create_scaler_body))
+    # List all scalers
+    print(fcli.list_scalers(cloud_id))
