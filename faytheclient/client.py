@@ -53,7 +53,7 @@ class Client(http.HTTPClient):
     def get_jwt_token(self):
         """Get and store jwt in its Session's cookies"""
         try:
-            resp = self.post('/public/tokens',
+            resp = self.post('/tokens',
                              auth=(self.username, self.password))
             self.headers = {"Authorization": resp.headers['Authorization']}
             LOG.debug("Logged into Faythe %s" % self.endpoint)
