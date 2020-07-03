@@ -217,3 +217,59 @@ class Client(http.HTTPClient):
         """
         url = utils.generate_url('/silences', cloud_id)
         return self.delete(url, headers=self.headers).json()
+
+    @decorator.refresh_jwt_token
+    def list_users(self):
+        """List all Faythe users with policies."""
+        url = utils.generate_url('/users')
+        return self.get(url, headers=self.headers).json()
+
+    @decorator.refresh_jwt_token
+    def create_user(self, user):
+        """Create new Faythe user.
+
+        :param user: A dict of user information.
+                     for example: {'username': 'new', 'password': 'secret'}
+        """
+        url = utils.generate_url('/users')
+        return self.post(url, headers=self.headers, data=user).json()
+
+    @decorator.refresh_jwt_token
+    def delete_user(self, username):
+        """Delete an existing user.
+
+        :param username: The name of user.
+        """
+        url = utils.generate_url('/users', username)
+        return self.delete(url, headers=self.headers).json()
+
+    @decorator.refresh_jwt_token
+    def change_password(self, username, newpassword):
+        """Change user's password.
+
+        :param username: The name of user.
+        :param newpassword: The new password.
+        """
+        url = utils.generate_url('/users', username, 'change_password')
+        return self.put(url, headers=self.headers,
+                        data={'newpassword': newpassword})
+
+    @decorator.refresh_jwt_token
+    def add_policies(self, username, body):
+        """Add a set of policies.
+
+        :param username: The name of user.
+        :param body: A list of dictionary object.
+        """
+        url = utils.generate_url('/policies', username)
+        return self.post(url, headers=self.headers, body=body).json()
+
+    @decorator.refresh_jwt_token
+    def remove_policies(self, username, body):
+        """Remove a set of policies.
+
+        :param username: The name of user.
+        :param body: A list of dictionary object.
+        """
+        url = utils.generate_url('/policies', username)
+        return self.delete(url, headers=self.headers, body=body).json()

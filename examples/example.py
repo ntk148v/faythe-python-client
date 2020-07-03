@@ -92,3 +92,7 @@ if __name__ == '__main__':
     print(fcli.create_scaler(cloud_id, create_scaler_body))
     # List all scalers
     print(fcli.list_scalers(cloud_id))
+    # Create a user
+    print(fcli.create_user({'username': 'newuser', 'password': 'newpassword'}))
+    # List all users
+    print(fcli.list_users())
