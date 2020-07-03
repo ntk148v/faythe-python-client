@@ -39,6 +39,7 @@ class Client(http.HTTPClient):
     """
 
     jwt_expired_at = None
+    headers = None
 
     def __init__(self, endpoint, username, password, **kwargs):
         """Initialize a new client for the Faythe API."""
@@ -52,8 +53,9 @@ class Client(http.HTTPClient):
     def get_jwt_token(self):
         """Get and store jwt in its Session's cookies"""
         try:
-            self.get('/public/login',
-                     auth=(self.username, self.password))
+            resp = self.post('/public/tokens',
+                             auth=(self.username, self.password))
+            self.headers = {"Authorization": resp.headers['Authorization']}
             LOG.debug("Logged into Faythe %s" % self.endpoint)
         except Exception as e:
             LOG.exception("Unable to authenticate a user: {}".format(e))
@@ -83,7 +85,7 @@ class Client(http.HTTPClient):
                          Clouds that match any tags in this list will be returned.
         """
         url = utils.generate_url('/clouds', **kwargs)
-        return self.get(url)
+        return self.get(url, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def register_cloud(self, provider, body):
@@ -94,7 +96,7 @@ class Client(http.HTTPClient):
         :param body: A dictionary object.
         """
         url = utils.generate_url('/clouds', provider)
-        return self.post(url, body=body)
+        return self.post(url, body=body, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def unregister_cloud(self, id):
@@ -103,7 +105,7 @@ class Client(http.HTTPClient):
         :param id: The id of cloud.
         """
         url = utils.generate_url('/clouds', id)
-        return self.delete(url. format(id))
+        return self.delete(url. format(id), headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def update_cloud(self, id, body=None):
@@ -114,7 +116,7 @@ class Client(http.HTTPClient):
                      is None, the cloud won't be updated.
         """
         url = utils.generate_url('/clouds', id)
-        return self.put(url, body=body)
+        return self.put(url, body=body, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def create_scaler(self, cloud_id, body):
@@ -124,7 +126,7 @@ class Client(http.HTTPClient):
         :param body: A dictionary object.
         """
         url = utils.generate_url('/scalers', cloud_id)
-        return self.post(url, body=body)
+        return self.post(url, body=body, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def list_scalers(self, cloud_id, **kwargs):
@@ -137,13 +139,13 @@ class Client(http.HTTPClient):
                          Scalers that match any tags in this list will be returned.
         """
         url = utils.generate_url('/scalers', cloud_id, **kwargs)
-        return self.get(url)
+        return self.get(url, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def delete_scaler(self, cloud_id):
         """Delete a scaler."""
         url = utils.generate_url('/scalers', cloud_id)
-        return self.delete(url)
+        return self.delete(url, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def update_scaler(self, cloud_id, body=None):
@@ -154,12 +156,12 @@ class Client(http.HTTPClient):
                      is None, the scaler won't be updated.
         """
         url = utils.generate_url('/scalers', cloud_id)
-        return self.put(url, body=body)
+        return self.put(url, body=body, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def list_nresolvers(self):
         """List all nresovlers (name resolvers)."""
-        return self.get('/nsresolvers')
+        return self.get('/nsresolvers', headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def list_healers(self, cloud_id):
@@ -167,7 +169,7 @@ class Client(http.HTTPClient):
 
         :param cloud_id: The id of cloud.
         """
-        return self.get('/healers')
+        return self.get('/healers', headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def create_healer(self, cloud_id, body):
@@ -177,7 +179,7 @@ class Client(http.HTTPClient):
         :param body: A dictionary object.
         """
         url = utils.generate_url('/healers', cloud_id)
-        return self.post(url, body=body)
+        return self.post(url, body=body, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def delete_healers(self, cloud_id):
@@ -186,7 +188,7 @@ class Client(http.HTTPClient):
         :param cloud_id: The id of cloud.
         """
         url = utils.generate_url('/healers', cloud_id)
-        return self.delete(url . format(cloud_id))
+        return self.delete(url . format(cloud_id), headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def create_silence(self, cloud_id, body):
@@ -196,7 +198,7 @@ class Client(http.HTTPClient):
         :param body: A dictionary object.
         """
         url = utils.generate_url('/silences', cloud_id)
-        return self.post(url,  body=body)
+        return self.post(url,  body=body, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def list_silences(self, cloud_id):
@@ -205,7 +207,7 @@ class Client(http.HTTPClient):
         :param cloud_id: The id of cloud.
         """
         url = utils.generate_url('/silences', cloud_id)
-        return self.get(url)
+        return self.get(url, headers=self.headers).json()
 
     @decorator.refresh_jwt_token
     def delete_silence(self, cloud_id):
@@ -214,4 +216,4 @@ class Client(http.HTTPClient):
         :param cloud_id: The id of cloud.
         """
         url = utils.generate_url('/silences', cloud_id)
-        return self.delete(url)
+        return self.delete(url, headers=self.headers).json()

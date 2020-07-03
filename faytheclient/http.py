@@ -106,11 +106,7 @@ class HTTPClient(object):
                 err_msg += " [Error: {}]".format(error_dict)
             raise requests.exceptions.HTTPError(err_msg)
         else:
-            try:
-                return response.json()
-            except (json.decoder.JSONDecodeError,
-                    simplejson.errors.JSONDecodeError):
-                pass
+            return response
 
     def head(self, url, **kwargs):
         return self._request('HEAD', url, **kwargs)
