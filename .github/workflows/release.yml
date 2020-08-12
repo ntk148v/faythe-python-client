@@ -1,0 +1,65 @@
+name: Release
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - run: |
+        echo "::set-env name=date::$(date +'%Y-%m-%d')"
+
+    - run: |
+        ref="${github_ref##*/}"
+        echo $ref
+        echo "::set-env name=ref::$ref"
+      env:
+        github_ref: ${{ github.ref }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+
+    - name: Build
+      run:
+        python setup.py sdist bdist_wheel
+
+    - name: Publish
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine upload dist/*
+
+    - name: Make release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ env.ref }} / ${{ env.date }}
+        draft: false
+        prerelease: false
+
+    - name: Upload release asset
+      id: upload_release_asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/faytheclient-${{ env.ref }}.tar.gz
+        asset_name: faytheclient-${{ env.ref }}.tar.gz
+        asset_content_type: application/gzip
