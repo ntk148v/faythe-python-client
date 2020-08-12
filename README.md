@@ -5,7 +5,7 @@
 This is a client library for [Faythe](https://github.com/vCloud-DFTBA/faythe) built on the its API. It provides a Python API (the faytheclient module).
 
 - **Python 3 only.**
-- **This client is compatible with Faythe version >= v0.4.0 and <= v0.4.3.**
+- **This client is compatible with Faythe version >= v0.4.4.**
 
 ## Installation
 
